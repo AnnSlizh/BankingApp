@@ -13,31 +13,38 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import by.slizh.bankingapp.components.TransactionOutlinedTextField
 import by.slizh.bankingapp.ui.theme.Blue
-import by.slizh.bankingapp.ui.theme.LightGrey
+
+
+data class TextFieldData(
+    val fieldLabel: String,
+    var value: MutableState<String>
+)
 
 @Composable
 fun AddTransactionScreen() {
 
-    var company by remember { mutableStateOf("") }
-    var transactionNumber by remember { mutableStateOf("") }
-    var date by remember { mutableStateOf("") }
-    var transactionStatus by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
+    val textFieldDataList = remember {
+        mutableStateListOf(
+            TextFieldData("Transaction was applied in", mutableStateOf("")),
+            TextFieldData("Transaction number", mutableStateOf("")),
+            TextFieldData("Date", mutableStateOf("")),
+            TextFieldData("Transaction status", mutableStateOf("")),
+            TextFieldData("Amount", mutableStateOf(""))
+        )
+    }
 
     Box(
         modifier = Modifier
@@ -47,80 +54,32 @@ fun AddTransactionScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 12.dp, start = 16.dp, end = 16.dp, bottom = 12.dp)
+                .padding(top = 7.dp, start = 16.dp, end = 16.dp, bottom = 7.dp)
                 .statusBarsPadding()
                 .navigationBarsPadding()
-
         ) {
             Text(text = "Transaction", fontSize = 28.sp, color = Color.White)
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Text(text = "Transaction was applied in", fontSize = 17.sp, color = Color.White)
-
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 16.dp),
-                value = company,
-                onValueChange = { company = it },
-                shape = RoundedCornerShape(8.dp),
-                textStyle = TextStyle(color = Color.White, fontSize = 15.sp)
-            )
-
-            Text(text = "Transaction number", fontSize = 17.sp, color = Color.White)
-
-            OutlinedTextField(
-                value = transactionNumber,
-                onValueChange = { transactionNumber = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 16.dp),
-                shape = RoundedCornerShape(8.dp),
-                textStyle = TextStyle(color = Color.White, fontSize = 15.sp)
-            )
-
-            Text(text = "Date", fontSize = 17.sp, color = Color.White)
-
-            OutlinedTextField(
-                value = date,
-                onValueChange = { date = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 16.dp),
-                shape = RoundedCornerShape(8.dp),
-                textStyle = TextStyle(color = Color.White, fontSize = 15.sp)
-            )
-
-            Text(text = "Transaction status", fontSize = 17.sp, color = Color.White)
-
-            OutlinedTextField(
-                value = transactionStatus,
-                onValueChange = { transactionStatus = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 16.dp),
-                shape = RoundedCornerShape(8.dp),
-                textStyle = TextStyle(color = Color.White, fontSize = 15.sp)
-            )
-
-            Text(text = "Amount", fontSize = 17.sp, color = Color.White)
-
-            OutlinedTextField(
-                value = amount,
-                onValueChange = { amount = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                shape = RoundedCornerShape(8.dp),
-                textStyle = TextStyle(color = Color.White, fontSize = 15.sp)
-            )
+            textFieldDataList.forEach { data ->
+                TransactionOutlinedTextField(
+                    fieldLabel = data.fieldLabel,
+                    value = data.value.value,
+                    onValueChange = { newValue ->
+                        data.value.value = newValue
+                    }
+                )
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Button(modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
-                containerColor = Blue
-            ), shape = RoundedCornerShape(10.dp), onClick = { /*TODO*/ }) {
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Blue),
+                shape = RoundedCornerShape(10.dp),
+                onClick = { /*TODO*/ }
+            ) {
                 Text(text = "Okay", fontSize = 17.sp)
             }
         }
