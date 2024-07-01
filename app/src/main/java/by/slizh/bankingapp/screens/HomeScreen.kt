@@ -1,4 +1,4 @@
-package by.slizh.bankingapp
+package by.slizh.bankingapp.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -34,15 +35,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import by.slizh.bankingapp.components.AccountBottomSheet
 import by.slizh.bankingapp.components.AccountCard
+import by.slizh.bankingapp.components.TransactionListItem
 import by.slizh.bankingapp.model.accountsList
+import by.slizh.bankingapp.model.transactionsList
+import by.slizh.bankingapp.navigation.Screen
 import by.slizh.bankingapp.ui.theme.Blue
 import by.slizh.bankingapp.ui.theme.DarkGrey
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavHostController) {
 
     var selectedAccount by remember { mutableStateOf(accountsList[0]) }
     var showAccountBottomSheet by remember { mutableStateOf(false) }
@@ -52,7 +58,7 @@ fun HomeScreen() {
             shape = CircleShape,
             containerColor = Blue,
             contentColor = Color.White,
-            onClick = { /*TODO*/ }) {
+            onClick = { navController.navigate(route = Screen.AddTransactionScreen.route) }) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "Add transaction")
         }
     }) {
@@ -90,7 +96,9 @@ fun HomeScreen() {
                     text = "VIEW ALL",
                     fontSize = 13.sp,
                     color = Blue,
-                    modifier = Modifier.clickable(onClick = {/*TODO*/ })
+                    modifier = Modifier.clickable(onClick = {
+                        navController.navigate(route = Screen.AllTransactionsScreen.route)
+                    })
                 )
             }
 
@@ -102,8 +110,17 @@ fun HomeScreen() {
                         .fillMaxWidth()
                         .background(DarkGrey)
                 ) {
-                    items(5) {
-                        TransactionListItem(showDetailsTransaction = {/*TODO*/ })
+                    items(transactionsList.takeLast(5)) { transaction ->
+                        TransactionListItem(
+                            transaction = transaction,
+                            showDetailsTransaction = {
+                                navController.navigate(
+                                    route = Screen.TransactionDetailsScreen.createRoute(
+                                        transaction.company
+                                    )
+                                )
+                            }
+                        )
                     }
                 }
             }
@@ -114,5 +131,5 @@ fun HomeScreen() {
 @Preview(showSystemUi = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    HomeScreen(rememberNavController())
 }
