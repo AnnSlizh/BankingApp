@@ -1,4 +1,4 @@
-package by.slizh.bankingapp
+package by.slizh.bankingapp.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -24,7 +24,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import by.slizh.bankingapp.components.TransactionOutlinedTextField
+import by.slizh.bankingapp.navigation.Screen
 import by.slizh.bankingapp.ui.theme.Blue
 
 
@@ -34,13 +37,12 @@ data class TextFieldData(
 )
 
 @Composable
-fun AddTransactionScreen() {
+fun AddTransactionScreen(navController: NavHostController) {
 
     val textFieldDataList = remember {
         mutableStateListOf(
             TextFieldData("Transaction was applied in", mutableStateOf("")),
             TextFieldData("Transaction number", mutableStateOf("")),
-            TextFieldData("Date", mutableStateOf("")),
             TextFieldData("Transaction status", mutableStateOf("")),
             TextFieldData("Amount", mutableStateOf(""))
         )
@@ -78,7 +80,7 @@ fun AddTransactionScreen() {
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Blue),
                 shape = RoundedCornerShape(10.dp),
-                onClick = { /*TODO*/ }
+                onClick = { navController.navigate(route = Screen.HomeScreen.route) }
             ) {
                 Text(text = "Okay", fontSize = 17.sp)
             }
@@ -86,9 +88,8 @@ fun AddTransactionScreen() {
     }
 }
 
-
 @Preview(showSystemUi = true)
 @Composable
 fun AddTransactionScreenPreview() {
-    AddTransactionScreen()
+    AddTransactionScreen(rememberNavController())
 }

@@ -1,4 +1,4 @@
-package by.slizh.bankingapp
+package by.slizh.bankingapp.screens
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -39,7 +40,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import by.slizh.bankingapp.R
 import by.slizh.bankingapp.components.CalendarField
+import by.slizh.bankingapp.components.TransactionListItem
+import by.slizh.bankingapp.model.transactionsList
+import by.slizh.bankingapp.navigation.Screen
 import by.slizh.bankingapp.ui.theme.Blue
 import by.slizh.bankingapp.ui.theme.DarkGrey
 import by.slizh.bankingapp.ui.theme.LightGrey
@@ -52,7 +59,7 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "RememberReturnType")
 @Composable
-fun AllTransactionsScreen() {
+fun AllTransactionsScreen(navController: NavHostController) {
 
     var startDate by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
@@ -77,7 +84,7 @@ fun AllTransactionsScreen() {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navController.navigate(route = Screen.HomeScreen.route) }) {
                         Image(
                             painter = painterResource(id = R.drawable.back_icon),
                             contentDescription = "Return to home screen"
@@ -107,8 +114,14 @@ fun AllTransactionsScreen() {
                     .fillMaxWidth()
                     .background(DarkGrey)
             ) {
-                items(10) {
-                    TransactionListItem(showDetailsTransaction = {/*TODO*/ })
+                items(transactionsList) { transaction ->
+                    TransactionListItem(transaction = transaction, showDetailsTransaction = {
+                        navController.navigate(
+                            route = Screen.TransactionDetailsScreen.createRoute(
+                                transaction.company
+                            )
+                        )
+                    })
                 }
             }
         }
@@ -139,10 +152,14 @@ fun AllTransactionsScreen() {
                         selectedDate = startDate,
                         onDateSelected = { date ->
                             startDate = date
-                            startLocalDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("d.M.yyyy"))
+                            startLocalDate =
+                                LocalDate.parse(date, DateTimeFormatter.ofPattern("d.M.yyyy"))
                             startDateError = false
                             if (endDate.isNotEmpty() && startLocalDate != null && startLocalDate!!.isAfter(
-                                    LocalDate.parse(endDate, DateTimeFormatter.ofPattern("d.M.yyyy"))
+                                    LocalDate.parse(
+                                        endDate,
+                                        DateTimeFormatter.ofPattern("d.M.yyyy")
+                                    )
                                 )
                             ) {
                                 endDate = ""
@@ -208,5 +225,5 @@ fun AllTransactionsScreen() {
 @Preview(showSystemUi = true)
 @Composable
 fun AllTransactionsScreenPreview() {
-    AllTransactionsScreen()
+    AllTransactionsScreen(rememberNavController())
 }

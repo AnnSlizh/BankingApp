@@ -1,4 +1,4 @@
-package by.slizh.bankingapp
+package by.slizh.bankingapp.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -16,11 +16,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import by.slizh.bankingapp.R
+import by.slizh.bankingapp.model.Transaction
 import by.slizh.bankingapp.ui.theme.Green
 import by.slizh.bankingapp.ui.theme.LightGrey
 
 @Composable
-fun TransactionListItem(showDetailsTransaction: () -> Unit) {
+fun TransactionListItem(transaction: Transaction, showDetailsTransaction: () -> Unit) {
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -34,14 +36,14 @@ fun TransactionListItem(showDetailsTransaction: () -> Unit) {
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            Text(text = "OOO Company", fontSize = 17.sp, color = Color.White)
+            Text(text = transaction.company, fontSize = 17.sp, color = Color.White)
             Text(
-                text = "01.06.2024",
+                text = transaction.date,
                 fontSize = 13.sp,
                 color = Color.White.copy(alpha = 0.6f)
             )
             Text(
-                text = "Executed",
+                text = transaction.transactionStatus,
                 fontSize = 13.sp,
                 color = Green
             )
@@ -53,7 +55,7 @@ fun TransactionListItem(showDetailsTransaction: () -> Unit) {
             modifier = Modifier.padding(start = 8.dp)
         ) {
             Text(
-                text = "$10.09",
+                text = transaction.amount,
                 fontSize = 17.sp,
                 color = Color.White,
                 modifier = Modifier.padding(end = 8.dp)
