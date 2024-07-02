@@ -1,4 +1,4 @@
-package by.slizh.bankingapp.screens
+package by.slizh.bankingapp.presentation.screens
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -43,10 +43,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import by.slizh.bankingapp.R
-import by.slizh.bankingapp.components.CalendarField
-import by.slizh.bankingapp.components.TransactionListItem
-import by.slizh.bankingapp.model.transactionsList
+import by.slizh.bankingapp.presentation.components.TransactionListItem
+import by.slizh.bankingapp.modelTest.transactionsList
 import by.slizh.bankingapp.navigation.Screen
+import by.slizh.bankingapp.presentation.components.CalendarField
 import by.slizh.bankingapp.ui.theme.Blue
 import by.slizh.bankingapp.ui.theme.DarkGrey
 import by.slizh.bankingapp.ui.theme.LightGrey

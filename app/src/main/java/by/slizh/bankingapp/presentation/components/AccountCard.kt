@@ -1,4 +1,4 @@
-package by.slizh.bankingapp.components
+package by.slizh.bankingapp.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import by.slizh.bankingapp.R
-import by.slizh.bankingapp.model.Account
+import by.slizh.bankingapp.modelTest.Account
 import by.slizh.bankingapp.ui.theme.DarkGrey
 
 @Composable

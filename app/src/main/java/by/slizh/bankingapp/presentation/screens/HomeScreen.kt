@@ -1,4 +1,4 @@
-package by.slizh.bankingapp.screens
+package by.slizh.bankingapp.presentation.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -37,12 +37,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import by.slizh.bankingapp.components.AccountBottomSheet
-import by.slizh.bankingapp.components.AccountCard
-import by.slizh.bankingapp.components.TransactionListItem
-import by.slizh.bankingapp.model.accountsList
-import by.slizh.bankingapp.model.transactionsList
+import by.slizh.bankingapp.presentation.components.TransactionListItem
+import by.slizh.bankingapp.modelTest.accountsList
+import by.slizh.bankingapp.modelTest.transactionsList
 import by.slizh.bankingapp.navigation.Screen
+import by.slizh.bankingapp.presentation.components.AccountBottomSheet
+import by.slizh.bankingapp.presentation.components.AccountCard
 import by.slizh.bankingapp.ui.theme.Blue
 import by.slizh.bankingapp.ui.theme.DarkGrey
 

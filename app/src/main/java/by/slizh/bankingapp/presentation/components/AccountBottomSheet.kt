@@ -1,4 +1,4 @@
-package by.slizh.bankingapp.components
+package by.slizh.bankingapp.presentation.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,8 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import by.slizh.bankingapp.model.Account
-import by.slizh.bankingapp.model.accountsList
+import by.slizh.bankingapp.modelTest.Account
+import by.slizh.bankingapp.modelTest.accountsList
 import by.slizh.bankingapp.ui.theme.DarkBlue
 import by.slizh.bankingapp.ui.theme.DarkGrey
 import kotlinx.coroutines.launch

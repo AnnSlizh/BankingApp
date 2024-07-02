@@ -8,10 +8,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import by.slizh.bankingapp.screens.AddTransactionScreen
-import by.slizh.bankingapp.screens.AllTransactionsScreen
-import by.slizh.bankingapp.screens.HomeScreen
-import by.slizh.bankingapp.screens.TransactionDetailsScreen
+import by.slizh.bankingapp.presentation.screens.AddTransactionScreen
+import by.slizh.bankingapp.presentation.screens.AllTransactionsScreen
+import by.slizh.bankingapp.presentation.screens.HomeScreen
+import by.slizh.bankingapp.presentation.screens.TransactionDetailsScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

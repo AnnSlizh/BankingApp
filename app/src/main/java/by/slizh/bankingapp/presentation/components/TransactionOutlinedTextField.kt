@@ -1,4 +1,4 @@
-package by.slizh.bankingapp.components
+package by.slizh.bankingapp.presentation.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,14 +13,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
 @Composable
-fun TransactionDetailsTextField(
+fun TransactionOutlinedTextField(
     fieldLabel: String,
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Column(modifier = modifier) {
         Text(text = fieldLabel, fontSize = 17.sp, color = Color.White)
         OutlinedTextField(
@@ -30,8 +30,7 @@ fun TransactionDetailsTextField(
                 .fillMaxWidth()
                 .padding(top = 8.dp, bottom = 16.dp),
             shape = RoundedCornerShape(8.dp),
-            textStyle = TextStyle(color = Color.White, fontSize = 15.sp),
-            readOnly = true
+            textStyle = TextStyle(color = Color.White, fontSize = 15.sp)
         )
     }
 }
