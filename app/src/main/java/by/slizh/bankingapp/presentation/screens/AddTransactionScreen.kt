@@ -1,4 +1,4 @@
-package by.slizh.bankingapp.screens
+package by.slizh.bankingapp.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,29 +15,36 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import by.slizh.bankingapp.components.TransactionDetailsTextField
-import by.slizh.bankingapp.model.transactionsList
+import androidx.navigation.compose.rememberNavController
 import by.slizh.bankingapp.navigation.Screen
+import by.slizh.bankingapp.presentation.components.TransactionOutlinedTextField
 import by.slizh.bankingapp.ui.theme.Blue
 
+
+data class TextFieldData(
+    val fieldLabel: String,
+    var value: MutableState<String>
+)
+
 @Composable
-fun TransactionDetailsScreen(navController: NavHostController, company: String) {
-    val transaction = transactionsList.find { it.company == company }
+fun AddTransactionScreen(navController: NavHostController) {
+
     val textFieldDataList = remember {
         mutableStateListOf(
-            TextFieldData("Transaction was applied in", mutableStateOf(transaction?.company ?: "")),
-            TextFieldData("Transaction number", mutableStateOf(transaction?.transactionNumber ?: "")),
-            TextFieldData("Date", mutableStateOf(transaction?.date ?: "")),
-            TextFieldData("Transaction status", mutableStateOf(transaction?.transactionStatus ?: "")),
-            TextFieldData("Amount", mutableStateOf(transaction?.amount ?: ""))
+            TextFieldData("Transaction was applied in", mutableStateOf("")),
+            TextFieldData("Transaction number", mutableStateOf("")),
+            TextFieldData("Transaction status", mutableStateOf("")),
+            TextFieldData("Amount", mutableStateOf(""))
         )
     }
 
@@ -58,7 +65,7 @@ fun TransactionDetailsScreen(navController: NavHostController, company: String) 
             Spacer(modifier = Modifier.height(32.dp))
 
             textFieldDataList.forEach { data ->
-                TransactionDetailsTextField(
+                TransactionOutlinedTextField(
                     fieldLabel = data.fieldLabel,
                     value = data.value.value,
                     onValueChange = { newValue ->
@@ -79,4 +86,10 @@ fun TransactionDetailsScreen(navController: NavHostController, company: String) 
             }
         }
     }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun AddTransactionScreenPreview() {
+    AddTransactionScreen(rememberNavController())
 }

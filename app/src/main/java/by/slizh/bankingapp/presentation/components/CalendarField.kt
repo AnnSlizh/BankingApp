@@ -1,4 +1,4 @@
-package by.slizh.bankingapp.components
+package by.slizh.bankingapp.presentation.components
 
 import android.os.Build
 import android.widget.CalendarView

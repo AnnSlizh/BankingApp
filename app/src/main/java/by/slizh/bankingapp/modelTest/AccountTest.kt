@@ -1,4 +1,4 @@
-package by.slizh.bankingapp.model
+package by.slizh.bankingapp.modelTest
 
 data class Account(
     val name: String,
