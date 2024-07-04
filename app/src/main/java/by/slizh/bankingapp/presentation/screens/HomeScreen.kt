@@ -24,9 +24,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,30 +38,51 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import by.slizh.bankingapp.presentation.components.TransactionListItem
-import by.slizh.bankingapp.modelTest.accountsList
-import by.slizh.bankingapp.modelTest.transactionsList
 import by.slizh.bankingapp.navigation.Screen
+import by.slizh.bankingapp.presentation.viewModels.account.AccountViewModel
 import by.slizh.bankingapp.presentation.components.AccountBottomSheet
 import by.slizh.bankingapp.presentation.components.AccountCard
+import by.slizh.bankingapp.presentation.viewModels.transaction.TransactionEvent
+import by.slizh.bankingapp.presentation.viewModels.transaction.TransactionViewModel
 import by.slizh.bankingapp.ui.theme.Blue
 import by.slizh.bankingapp.ui.theme.DarkGrey
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(navController: NavHostController) {
-
-    var selectedAccount by remember { mutableStateOf(accountsList[0]) }
+fun HomeScreen(
+    navController: NavHostController,
+    accountViewModel: AccountViewModel = hiltViewModel(),
+    transactionViewModel: TransactionViewModel = hiltViewModel()
+) {
+    val accountState by accountViewModel.state.collectAsState()
+    val transactionState by transactionViewModel.state.collectAsState()
+    var currentAccountId by rememberSaveable { mutableStateOf<Int?>(null) }
     var showAccountBottomSheet by remember { mutableStateOf(false) }
+
+    val currentAccount = currentAccountId?.let { id ->
+        accountState.accounts.find { it.id == id }
+    } ?: accountState.accounts.firstOrNull()
+
+    LaunchedEffect(currentAccount) {
+        currentAccount?.id?.let { accountId ->
+            transactionViewModel.onEvent(TransactionEvent.GetTransactions(accountId))
+        }
+    }
 
     Scaffold(containerColor = Color.Black, floatingActionButton = {
         FloatingActionButton(
             shape = CircleShape,
             containerColor = Blue,
             contentColor = Color.White,
-            onClick = { navController.navigate(route = Screen.AddTransactionScreen.route) }) {
+            onClick = {
+                currentAccount?.id?.let { accountId ->
+                    navController.navigate(route = Screen.AddTransactionScreen.createRoute(accountId))
+                }
+            }) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "Add transaction")
         }
     }) {
@@ -69,19 +93,22 @@ fun HomeScreen(navController: NavHostController) {
                 .padding(top = 12.dp, start = 16.dp, end = 16.dp, bottom = 12.dp)
                 .statusBarsPadding()
                 .navigationBarsPadding()
-
         ) {
             Text(text = "Account", fontSize = 28.sp, color = Color.White)
             Spacer(modifier = Modifier.height(16.dp))
 
-            AccountCard(account = selectedAccount, onClick = { showAccountBottomSheet = true })
+            currentAccount?.let { selectedAccount ->
+                AccountCard(account = selectedAccount, onClick = { showAccountBottomSheet = true })
+            }
 
             if (showAccountBottomSheet) {
                 AccountBottomSheet(
-                    currentAccount = selectedAccount,
+                    accounts = accountState.accounts,
+                    currentAccount = currentAccount ?: accountState.accounts.first(),
                     onAccountSelected = { account ->
-                        selectedAccount = account
+                        currentAccountId = account.id
                         showAccountBottomSheet = false
+
                     }
                 )
             }
@@ -97,7 +124,9 @@ fun HomeScreen(navController: NavHostController) {
                     fontSize = 13.sp,
                     color = Blue,
                     modifier = Modifier.clickable(onClick = {
-                        navController.navigate(route = Screen.AllTransactionsScreen.route)
+                        currentAccount?.id?.let { accountId ->
+                            navController.navigate(route = Screen.AllTransactionsScreen.createRoute(accountId))
+                        }
                     })
                 )
             }
@@ -110,13 +139,13 @@ fun HomeScreen(navController: NavHostController) {
                         .fillMaxWidth()
                         .background(DarkGrey)
                 ) {
-                    items(transactionsList.takeLast(5)) { transaction ->
+                    items(transactionState.transactions.take(5)) { transaction ->
                         TransactionListItem(
                             transaction = transaction,
                             showDetailsTransaction = {
                                 navController.navigate(
                                     route = Screen.TransactionDetailsScreen.createRoute(
-                                        transaction.company
+                                        transaction.id
                                     )
                                 )
                             }
