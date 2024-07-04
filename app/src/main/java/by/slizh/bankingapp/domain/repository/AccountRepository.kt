@@ -8,4 +8,6 @@ interface AccountRepository {
     fun getAllAccounts(): Flow<List<Account>>
 
     fun getAccountById(accountId: Int): Account
+
+    suspend fun insertAccount(account: Account)
 }

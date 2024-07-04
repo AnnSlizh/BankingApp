@@ -9,4 +9,8 @@ class AccountRepositoryImpl(private val accountDao: AccountDao) : AccountReposit
     override fun getAllAccounts(): Flow<List<Account>> = accountDao.getAllAccounts()
 
     override fun getAccountById(accountId: Int): Account = accountDao.getAccountById(accountId)
+
+    override suspend fun insertAccount(account: Account) {
+        accountDao.insertAccount(account)
+    }
 }
