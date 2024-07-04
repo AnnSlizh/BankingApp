@@ -28,6 +28,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,30 +39,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import by.slizh.bankingapp.R
 import by.slizh.bankingapp.presentation.components.TransactionListItem
-import by.slizh.bankingapp.modelTest.transactionsList
 import by.slizh.bankingapp.navigation.Screen
 import by.slizh.bankingapp.presentation.components.CalendarField
+import by.slizh.bankingapp.presentation.viewModels.transaction.TransactionEvent
+import by.slizh.bankingapp.presentation.viewModels.transaction.TransactionViewModel
 import by.slizh.bankingapp.ui.theme.Blue
 import by.slizh.bankingapp.ui.theme.DarkGrey
 import by.slizh.bankingapp.ui.theme.LightGrey
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "RememberReturnType")
 @Composable
-fun AllTransactionsScreen(navController: NavHostController) {
-
+fun AllTransactionsScreen(
+    navController: NavHostController,
+    transactionViewModel: TransactionViewModel = hiltViewModel(),
+    accountId: Int
+) {
     var startDate by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
     var startLocalDate by remember { mutableStateOf<LocalDate?>(null) }
@@ -70,6 +77,13 @@ fun AllTransactionsScreen(navController: NavHostController) {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showFilterBottomSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(accountId) {
+        transactionViewModel.onEvent(TransactionEvent.GetTransactions(accountId))
+    }
+
+    val transactionState by transactionViewModel.state.collectAsState()
+    val transactions = transactionState.transactions
 
     Scaffold(
         containerColor = Color.Black,
@@ -84,7 +98,7 @@ fun AllTransactionsScreen(navController: NavHostController) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(route = Screen.HomeScreen.route) }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Image(
                             painter = painterResource(id = R.drawable.back_icon),
                             contentDescription = "Return to home screen"
@@ -114,11 +128,11 @@ fun AllTransactionsScreen(navController: NavHostController) {
                     .fillMaxWidth()
                     .background(DarkGrey)
             ) {
-                items(transactionsList) { transaction ->
+                items(transactions) { transaction ->
                     TransactionListItem(transaction = transaction, showDetailsTransaction = {
                         navController.navigate(
                             route = Screen.TransactionDetailsScreen.createRoute(
-                                transaction.company
+                                transaction.id
                             )
                         )
                     })
@@ -205,6 +219,17 @@ fun AllTransactionsScreen(navController: NavHostController) {
                                 endDateError = true
                             }
                             if (startDate.isNotEmpty() && endDate.isNotEmpty()) {
+                                val dateFormat = SimpleDateFormat("d.M.yyyy", Locale.getDefault())
+                                val startDateObject = dateFormat.parse(startDate)
+                                val endDateObject = dateFormat.parse(endDate)
+
+                                transactionViewModel.onEvent(
+                                    TransactionEvent.GetTransactionsByDate(
+                                        accountId = accountId,
+                                        startDate = startDateObject,
+                                        endDate = endDateObject
+                                    )
+                                )
                                 scope.launch { sheetState.hide() }.invokeOnCompletion {
                                     if (!sheetState.isVisible) {
                                         showFilterBottomSheet = false
@@ -219,11 +244,4 @@ fun AllTransactionsScreen(navController: NavHostController) {
             }
         }
     }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showSystemUi = true)
-@Composable
-fun AllTransactionsScreenPreview() {
-    AllTransactionsScreen(rememberNavController())
 }
