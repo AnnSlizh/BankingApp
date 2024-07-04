@@ -11,16 +11,15 @@ import java.util.Date
 @Dao
 interface TransactionDao {
 
-    @Query("SELECT * FROM `transaction` WHERE accountId = :accountId")
+    @Query("SELECT * FROM transactions WHERE accountId = :accountId ORDER BY date DESC")
     fun getAllTransactions(accountId: Int): Flow<List<Transaction>>
 
-    @Query("SELECT * FROM `transaction` WHERE accountId = :accountId AND date BETWEEN :startDate AND :endDate")
+    @Query("SELECT * FROM transactions WHERE accountId = :accountId AND date BETWEEN :startDate AND :endDate")
     fun getTransactionsByDate(accountId: Int, startDate: Date, endDate: Date): Flow<List<Transaction>>
 
-    @Query("SELECT * FROM `transaction` WHERE id = :transactionId")
+    @Query("SELECT * FROM transactions WHERE id = :transactionId")
     fun getTransactionById(transactionId: Int): Transaction
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTransaction(transaction: Transaction)
-
 }

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 @Entity(
-    tableName = "transaction",
+    tableName = "transactions",
     foreignKeys = [ForeignKey(
         entity = Account::class,
         parentColumns = ["id"],
