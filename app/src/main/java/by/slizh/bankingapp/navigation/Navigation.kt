@@ -22,24 +22,44 @@ fun Navigation(navController: NavHostController) {
             HomeScreen(navController = navController)
         }
 
-        composable(route = Screen.AllTransactionsScreen.route) {
-            AllTransactionsScreen(navController = navController)
+        composable(
+            route = Screen.AllTransactionsScreen.route,
+            arguments = listOf(navArgument("accountId") {
+                type = NavType.IntType
+            })
+        ) { backStackEntry ->
+            val accountId = backStackEntry.arguments?.getInt("accountId")
+            if (accountId != null) AllTransactionsScreen(
+                navController = navController,
+                accountId = accountId
+            )
         }
 
-        composable(route = Screen.AddTransactionScreen.route) {
-            AddTransactionScreen(navController = navController)
+        composable(
+            route = Screen.AddTransactionScreen.route,
+            arguments = listOf(navArgument("accountId") {
+                type = NavType.IntType
+            })
+        ) { backStackEntry ->
+            val accountId = backStackEntry.arguments?.getInt("accountId")
+            if (accountId != null) AddTransactionScreen(
+                navController = navController,
+                accountId = accountId
+            )
         }
 
         composable(
             route = Screen.TransactionDetailsScreen.route,
-            arguments = listOf(navArgument("company") {
-                type = NavType.StringType
+            arguments = listOf(navArgument("transactionId") {
+                type = NavType.IntType
             })
         ) { backStackEntry ->
-            val company = backStackEntry.arguments?.getString("company")
-            if (company != null) {
-                TransactionDetailsScreen(navController = navController, company = company)
-            }
+            val transactionId = backStackEntry.arguments?.getInt("transactionId")
+            if (transactionId != null) TransactionDetailsScreen(
+                navController = navController,
+                transactionId = transactionId
+            )
+
         }
     }
 }
