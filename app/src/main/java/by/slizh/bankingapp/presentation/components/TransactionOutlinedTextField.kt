@@ -13,12 +13,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-
 @Composable
 fun TransactionOutlinedTextField(
     fieldLabel: String,
     value: String,
     onValueChange: (String) -> Unit,
+    isError: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -30,7 +30,8 @@ fun TransactionOutlinedTextField(
                 .fillMaxWidth()
                 .padding(top = 8.dp, bottom = 16.dp),
             shape = RoundedCornerShape(8.dp),
-            textStyle = TextStyle(color = Color.White, fontSize = 15.sp)
+            textStyle = TextStyle(color = Color.White, fontSize = 15.sp),
+            isError = isError
         )
     }
 }
