@@ -15,37 +15,32 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import by.slizh.bankingapp.navigation.Screen
+import by.slizh.bankingapp.presentation.viewModels.addTransaction.AddTransactionEvent
+import by.slizh.bankingapp.presentation.viewModels.addTransaction.AddTransactionViewModel
 import by.slizh.bankingapp.presentation.components.TransactionOutlinedTextField
 import by.slizh.bankingapp.ui.theme.Blue
 
-
-data class TextFieldData(
-    val fieldLabel: String,
-    var value: MutableState<String>
-)
-
 @Composable
-fun AddTransactionScreen(navController: NavHostController) {
+fun AddTransactionScreen(
+    navController: NavHostController,
+    accountId: Int,
+    addTransactionViewModel: AddTransactionViewModel = hiltViewModel()
+) {
+    val state by addTransactionViewModel.state.collectAsState()
 
-    val textFieldDataList = remember {
-        mutableStateListOf(
-            TextFieldData("Transaction was applied in", mutableStateOf("")),
-            TextFieldData("Transaction number", mutableStateOf("")),
-            TextFieldData("Transaction status", mutableStateOf("")),
-            TextFieldData("Amount", mutableStateOf(""))
-        )
+    LaunchedEffect(Unit) {
+        addTransactionViewModel.onEvent(AddTransactionEvent.SetAccountId(accountId))
     }
 
     Box(
@@ -61,18 +56,33 @@ fun AddTransactionScreen(navController: NavHostController) {
                 .navigationBarsPadding()
         ) {
             Text(text = "Transaction", fontSize = 28.sp, color = Color.White)
-
             Spacer(modifier = Modifier.height(32.dp))
 
-            textFieldDataList.forEach { data ->
-                TransactionOutlinedTextField(
-                    fieldLabel = data.fieldLabel,
-                    value = data.value.value,
-                    onValueChange = { newValue ->
-                        data.value.value = newValue
-                    }
-                )
-            }
+            TransactionOutlinedTextField(
+                fieldLabel = "Transaction was applied in",
+                value = state.company,
+                onValueChange = {
+                    addTransactionViewModel.onEvent(
+                        AddTransactionEvent.EnterCompany(
+                            it
+                        )
+                    )
+                },
+                isError = state.companyError
+
+            )
+            TransactionOutlinedTextField(
+                fieldLabel = "Transaction number",
+                value = state.transactionNumber,
+                onValueChange = { addTransactionViewModel.onEvent(AddTransactionEvent.EnterNumber(it)) },
+                isError = state.transactionNumberError
+            )
+            TransactionOutlinedTextField(
+                fieldLabel = "Amount",
+                value = state.amount,
+                onValueChange = { addTransactionViewModel.onEvent(AddTransactionEvent.EnterAmount(it)) },
+                isError = state.amountError || state.amountFormatError
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -80,7 +90,18 @@ fun AddTransactionScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Blue),
                 shape = RoundedCornerShape(10.dp),
-                onClick = { navController.navigate(route = Screen.HomeScreen.route) }
+                onClick = {
+                    addTransactionViewModel.onEvent(AddTransactionEvent.ValidateFields)
+                    val currentState = addTransactionViewModel.state.value
+                    if (currentState.companyError ||
+                        currentState.transactionNumberError ||
+                        currentState.amountError || currentState.amountFormatError
+                    ) {
+                        return@Button
+                    }
+                    addTransactionViewModel.onEvent(AddTransactionEvent.AddTransaction)
+                    navController.popBackStack()
+                }
             ) {
                 Text(text = "Okay", fontSize = 17.sp)
             }
@@ -91,5 +112,5 @@ fun AddTransactionScreen(navController: NavHostController) {
 @Preview(showSystemUi = true)
 @Composable
 fun AddTransactionScreenPreview() {
-    AddTransactionScreen(rememberNavController())
+    AddTransactionScreen(rememberNavController(), 1)
 }
