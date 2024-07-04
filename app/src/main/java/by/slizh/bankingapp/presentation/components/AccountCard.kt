@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import by.slizh.bankingapp.R
-import by.slizh.bankingapp.modelTest.Account
+import by.slizh.bankingapp.domain.model.Account
 import by.slizh.bankingapp.ui.theme.DarkGrey
 
 @Composable
