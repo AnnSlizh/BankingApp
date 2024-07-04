@@ -31,31 +31,6 @@ class AccountViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: AccountEvent) {
-        when (event) {
-            is AccountEvent.GetAccounts -> {
-                viewModelScope.launch {
-                    accountUseCases.getAllAccounts().collect { accounts ->
-                        _state.value = _state.value.copy(accounts = accounts)
-                    }
-                }
-            }
-
-            is AccountEvent.CurrentAccount -> {
-                viewModelScope.launch {
-                    val account = accountUseCases.getAccountById(event.accountId)
-                    _state.value = _state.value.copy(currentAccount = account)
-                }
-            }
-
-            is AccountEvent.AddAccount -> {
-                viewModelScope.launch {
-                    accountUseCases.addAccount(event.account)
-                }
-            }
-        }
-    }
-
     private suspend fun addInitialAccounts() {
         val initialAccounts = listOf(
             Account(id = 1, name = "Hope", accountNumber = 1682739475, cardNumber = 12345678),
