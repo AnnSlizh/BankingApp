@@ -1,5 +1,6 @@
 package by.slizh.bankingapp.presentation.components
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.widget.CalendarView
 import androidx.annotation.RequiresApi
@@ -31,6 +32,7 @@ import by.slizh.bankingapp.R
 import by.slizh.bankingapp.ui.theme.LightGrey
 import java.time.LocalDate
 
+@SuppressLint("DefaultLocale")
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,7 +88,7 @@ fun CalendarField(
                             calendarView.minDate = minDate.toEpochDay() * 86400000
                         }
                         calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-                            val date = "$dayOfMonth.${month + 1}.$year"
+                            val date = "${String.format("%02d", dayOfMonth)}.${String.format("%02d", month + 1)}.$year"
                             onDateSelected(date)
                             expanded = false
                         }

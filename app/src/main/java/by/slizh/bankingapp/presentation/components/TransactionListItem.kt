@@ -18,15 +18,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import by.slizh.bankingapp.R
 import by.slizh.bankingapp.domain.model.Transaction
+import by.slizh.bankingapp.presentation.util.DateFormat
 import by.slizh.bankingapp.ui.theme.Green
 import by.slizh.bankingapp.ui.theme.LightGrey
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @Composable
 fun TransactionListItem(transaction: Transaction, showDetailsTransaction: () -> Unit) {
 
-    val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+    val dateFormat = DateFormat.formatDate(transaction.date)
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -42,7 +41,7 @@ fun TransactionListItem(transaction: Transaction, showDetailsTransaction: () -> 
         ) {
             Text(text = transaction.company, fontSize = 17.sp, color = Color.White)
             Text(
-                text = dateFormat.format( transaction.date).toString(),
+                text = dateFormat.format(transaction.date),
                 fontSize = 13.sp,
                 color = Color.White.copy(alpha = 0.6f)
             )
