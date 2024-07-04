@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.sp
 fun TransactionDetailsTextField(
     fieldLabel: String,
     value: String,
-    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -25,7 +24,7 @@ fun TransactionDetailsTextField(
         Text(text = fieldLabel, fontSize = 17.sp, color = Color.White)
         OutlinedTextField(
             value = value,
-            onValueChange = onValueChange,
+            onValueChange = {},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp, bottom = 16.dp),

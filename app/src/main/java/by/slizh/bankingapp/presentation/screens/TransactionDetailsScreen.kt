@@ -15,29 +15,50 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import by.slizh.bankingapp.presentation.components.TransactionDetailsTextField
-import by.slizh.bankingapp.modelTest.transactionsList
-import by.slizh.bankingapp.navigation.Screen
+import by.slizh.bankingapp.presentation.viewModels.transaction.TransactionEvent
+import by.slizh.bankingapp.presentation.viewModels.transaction.TransactionViewModel
 import by.slizh.bankingapp.ui.theme.Blue
+import java.text.SimpleDateFormat
+import java.util.Locale
+
+data class TransactionField(
+    val fieldLabel: String,
+    var value: String
+)
 
 @Composable
-fun TransactionDetailsScreen(navController: NavHostController, company: String) {
-    val transaction = transactionsList.find { it.company == company }
-    val textFieldDataList = remember {
-        mutableStateListOf(
-            TextFieldData("Transaction was applied in", mutableStateOf(transaction?.company ?: "")),
-            TextFieldData("Transaction number", mutableStateOf(transaction?.transactionNumber ?: "")),
-            TextFieldData("Date", mutableStateOf(transaction?.date ?: "")),
-            TextFieldData("Transaction status", mutableStateOf(transaction?.transactionStatus ?: "")),
-            TextFieldData("Amount", mutableStateOf(transaction?.amount ?: ""))
+fun TransactionDetailsScreen(
+    navController: NavHostController,
+    transactionViewModel: TransactionViewModel = hiltViewModel(),
+    transactionId: Int
+) {
+    val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+
+    val transactionState by transactionViewModel.state.collectAsState()
+    val transaction = transactionState.currentTransaction
+
+    LaunchedEffect(transactionId) {
+        transactionViewModel.onEvent(TransactionEvent.GetTransactionById(transactionId))
+    }
+
+    val fields = remember(transaction) {
+        listOf(
+            TransactionField("Transaction was applied in", transaction?.company ?: "No data"),
+            TransactionField("Transaction number", transaction?.transactionNumber ?: "No data"),
+            TransactionField("Date", transaction?.date?.let { dateFormat.format(it) } ?: "No data"),
+            TransactionField("Transaction status", transaction?.transactionStatus ?: "No data"),
+            TransactionField("Amount", transaction?.amount.toString())
         )
     }
 
@@ -57,13 +78,10 @@ fun TransactionDetailsScreen(navController: NavHostController, company: String) 
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            textFieldDataList.forEach { data ->
+            fields.forEach { field ->
                 TransactionDetailsTextField(
-                    fieldLabel = data.fieldLabel,
-                    value = data.value.value,
-                    onValueChange = { newValue ->
-                        data.value.value = newValue
-                    }
+                    fieldLabel = field.fieldLabel,
+                    value = field.value,
                 )
             }
 
@@ -73,7 +91,9 @@ fun TransactionDetailsScreen(navController: NavHostController, company: String) 
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Blue),
                 shape = RoundedCornerShape(10.dp),
-                onClick = { navController.navigate(route = Screen.HomeScreen.route) }
+                onClick = {
+                    navController.popBackStack()
+                }
             ) {
                 Text(text = "Okay", fontSize = 17.sp)
             }
