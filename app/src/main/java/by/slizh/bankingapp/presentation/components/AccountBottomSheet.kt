@@ -20,8 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import by.slizh.bankingapp.modelTest.Account
-import by.slizh.bankingapp.modelTest.accountsList
+import by.slizh.bankingapp.domain.model.Account
 import by.slizh.bankingapp.ui.theme.DarkBlue
 import by.slizh.bankingapp.ui.theme.DarkGrey
 import kotlinx.coroutines.launch
@@ -29,6 +28,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountBottomSheet(
+    accounts: List<Account>,
     currentAccount: Account,
     onAccountSelected: (Account) -> Unit
 ) {
@@ -55,7 +55,7 @@ fun AccountBottomSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    items(accountsList) { account ->
+                    items(accounts) { account ->
                         val backgroundColor =
                             if (account == currentAccount) DarkBlue else DarkGrey
                         AccountCard(
