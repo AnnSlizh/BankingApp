@@ -53,11 +53,8 @@ import by.slizh.bankingapp.ui.theme.Blue
 import by.slizh.bankingapp.ui.theme.DarkGrey
 import by.slizh.bankingapp.ui.theme.LightGrey
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -167,12 +164,12 @@ fun AllTransactionsScreen(
                         onDateSelected = { date ->
                             startDate = date
                             startLocalDate =
-                                LocalDate.parse(date, DateTimeFormatter.ofPattern("d.M.yyyy"))
+                                LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
                             startDateError = false
                             if (endDate.isNotEmpty() && startLocalDate != null && startLocalDate!!.isAfter(
                                     LocalDate.parse(
                                         endDate,
-                                        DateTimeFormatter.ofPattern("d.M.yyyy")
+                                        DateTimeFormatter.ofPattern("dd.MM.yyyy")
                                     )
                                 )
                             ) {
@@ -219,15 +216,11 @@ fun AllTransactionsScreen(
                                 endDateError = true
                             }
                             if (startDate.isNotEmpty() && endDate.isNotEmpty()) {
-                                val dateFormat = SimpleDateFormat("d.M.yyyy", Locale.getDefault())
-                                val startDateObject = dateFormat.parse(startDate)
-                                val endDateObject = dateFormat.parse(endDate)
-
                                 transactionViewModel.onEvent(
                                     TransactionEvent.GetTransactionsByDate(
                                         accountId = accountId,
-                                        startDate = startDateObject,
-                                        endDate = endDateObject
+                                        startDate = startDate,
+                                        endDate = endDate
                                     )
                                 )
                                 scope.launch { sheetState.hide() }.invokeOnCompletion {

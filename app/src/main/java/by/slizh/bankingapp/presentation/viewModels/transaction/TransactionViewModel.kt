@@ -3,12 +3,12 @@ package by.slizh.bankingapp.presentation.viewModels.transaction
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.slizh.bankingapp.domain.useCase.TransactionUseCases
+import by.slizh.bankingapp.presentation.util.DateFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,12 +44,17 @@ class TransactionViewModel @Inject constructor(
 
             is TransactionEvent.GetTransactionsByDate -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    transactionUseCases.getTransactionsByDate(
-                        event.accountId,
-                        event.startDate,
-                        event.endDate
-                    ).collect { transactions ->
-                        _state.value = _state.value.copy(transactions = transactions)
+                    val startDate = DateFormat.parseDate(event.startDate)
+                    val endDate = DateFormat.parseDate(event.endDate)
+
+                    if (startDate != null && endDate != null) {
+                        transactionUseCases.getTransactionsByDate(
+                            event.accountId,
+                            startDate,
+                            endDate
+                        ).collect { transactions ->
+                            _state.value = _state.value.copy(transactions = transactions)
+                        }
                     }
                 }
             }
